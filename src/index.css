@@ -1,1 +1,12 @@
 @import "tailwindcss";
+@plugin "daisyui";
+
+@theme
+{
+
+}
+
+.container
+{
+    @apply w-[90%] md:w-[80%] mx-auto;
+}
