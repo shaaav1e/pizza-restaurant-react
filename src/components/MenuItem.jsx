@@ -1,5 +1,34 @@
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { addItem, removeItem, updateQuantity } from "../store/cartSlice";
+
 const MenuItem = ({ item, readonly }) => {
-  const quantity = 0;
+  const dispatch = useAppDispatch();
+  const cartItems = useAppSelector((state) => state.cart.items);
+
+  // Find the current item in the cart to get its quantity
+  const cartItem = cartItems.find((cartItem) => cartItem.id === item.id);
+  const quantity = cartItem ? cartItem.quantity : 0;
+
+  const handleAddToCart = () => {
+    dispatch(addItem({ ...item, quantity: 1 }));
+  };
+
+  const handleIncreaseQuantity = () => {
+    dispatch(addItem({ ...item, quantity: 1 }));
+  };
+
+  const handleDecreaseQuantity = () => {
+    if (quantity > 1) {
+      dispatch(updateQuantity({ id: item.id, quantity: quantity - 1 }));
+    } else {
+      dispatch(removeItem(item.id));
+    }
+  };
+
+  const handleRemoveItem = () => {
+    dispatch(removeItem(item.id));
+  };
+
   return (
     <div className="card px-4 card-side bg-base-300 shadow-xl">
       <figure className="w-32 min-w-32 mask mask-squircle">
@@ -9,11 +38,17 @@ const MenuItem = ({ item, readonly }) => {
         <h2 className="card-title">{item.title}</h2>
         <div>{item.ingredients.join(", ")}</div>
         <div className={`card-actions justify-between items-end`}>
-          <b className="font-semibold">€{item.price}</b>
-          <button className="btn btn-primary">Add to Cart</button>
+          <b className="font-semibold">€{item.price}</b>{" "}
+          <button className="btn btn-primary" onClick={handleAddToCart}>
+            Add to Cart
+          </button>
           <div className="flex gap-4 items-center">
             {!readonly && (
-              <button className="btn btn-sm md:btn-md btn-primary btn-circle">
+              <button
+                className="btn btn-sm md:btn-md btn-primary btn-circle"
+                onClick={handleDecreaseQuantity}
+                disabled={quantity === 0}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
@@ -28,10 +63,13 @@ const MenuItem = ({ item, readonly }) => {
                 </svg>
               </button>
             )}
-            <span>{!readonly ? quantity : `Quantity: ${quantity}`}</span>
+            <span>{!readonly ? quantity : `Quantity: ${quantity}`}</span>{" "}
             {!readonly && (
               <>
-                <button className="btn btn-sm md:btn-md btn-primary btn-circle">
+                <button
+                  className="btn btn-sm md:btn-md btn-primary btn-circle"
+                  onClick={handleIncreaseQuantity}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -45,7 +83,11 @@ const MenuItem = ({ item, readonly }) => {
                     />
                   </svg>
                 </button>
-                <button className="btn btn-sm md:btn-md btn-primary ml-4">
+                <button
+                  className="btn btn-sm md:btn-md btn-primary ml-4"
+                  onClick={handleRemoveItem}
+                  disabled={quantity === 0}
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
